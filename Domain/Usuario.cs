@@ -2,7 +2,8 @@
 
 namespace Domain
 {
-    public class Program
+    public class Usuario
     {
+        
     }
 }
