@@ -3,8 +3,9 @@ using System.Linq;
 
 namespace Domain
 {
-    public class CBF : User
+    public class Player
     {
-        
+        public string Name
+        {get; private set;}
     }
 }

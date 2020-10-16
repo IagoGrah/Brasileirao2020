@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Domain
 {
-    public class CBF : User
+    public class User
     {
         
     }
