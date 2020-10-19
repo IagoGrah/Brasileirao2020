@@ -72,18 +72,67 @@ namespace Domain
             Round++;
         }
 
-        public bool PlayRound(bool isCBF)
+        public List<string> PlayRound(bool isCBF)
         {
-            if (!isCBF) {return false;}
+            if (!isCBF) {return null;}
 
-            if (!Table.All(x => x.CurrentOpponent != null)) {return false;}
+            if (!Table.All(x => x.CurrentOpponent != null)) {return null;}
+
+            var results = new List<string>();
             
             foreach (var team in Table)
             {
-                // Play round
+                if (team.HasPlayed) {continue;}
+
+                var random = new Random();
+                var score1 = random.Next(0, 4);
+                var score2 = random.Next(0, 4);
+
+                team.GoalsFor += score1;
+                team.CurrentOpponent.GoalsFor += score2;
+                team.GoalsAgainst += score2;
+                team.CurrentOpponent.GoalsAgainst += score1;
+
+                if(score1 > score2)
+                {
+                    team.Wins++;
+                }
+                else if(score2 > score1)
+                {
+                    team.CurrentOpponent.Wins++;
+                }
+                else
+                {
+                    team.Draws++;
+                    team.CurrentOpponent.Draws++;
+                }
+
+                for(var i = 1; i <= score1; i++)
+                {
+                    var playerIndex = random.Next(0, team.Players.Count - 1);
+                    team.Players[playerIndex].GoalsForTeam++;
+                }
+
+                for(var i = 1; i <= score2; i++)
+                {
+                    var playerIndex = random.Next(0, team.CurrentOpponent.Players.Count - 1);
+                    team.CurrentOpponent.Players[playerIndex].GoalsForTeam++;
+                }
+
+                team.HasPlayed = true;
+                team.CurrentOpponent.HasPlayed = true;
+
+                results.Add($"{team.TeamName} {score1} x {score2} {team.CurrentOpponent.TeamName}");
+ 
             }
 
-            return true;
+            return results;
+
         }
+
+       public List<string> GetTable()
+       {
+           return null;
+       } 
     }
 }

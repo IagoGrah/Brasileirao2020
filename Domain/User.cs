@@ -5,6 +5,6 @@ namespace Domain
 {
     public class User
     {
-        
+        public bool isCBF { get; private set; }
     }
 }
