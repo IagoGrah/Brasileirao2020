@@ -121,9 +121,10 @@ namespace Domain
 
                 team.HasPlayed = true;
                 team.CurrentOpponent.HasPlayed = true;
+                team.PreviousOpponents.Add(team.CurrentOpponent);
+                team.CurrentOpponent.PreviousOpponents.Add(team);
 
                 results.Add($"{team.TeamName} {score1} x {score2} {team.CurrentOpponent.TeamName}");
- 
             }
 
             return results;
@@ -132,7 +133,20 @@ namespace Domain
 
        public List<string> GetTable()
        {
-           return null;
-       } 
+           var result = new List<string>();
+           
+           foreach (var team in Table)
+           {
+               double points = (team.Wins*3) + (team.Draws);
+               double played = team.HasPlayed ? Round : Round - 1;
+               double defeats = played - team.Wins - team.Draws;
+               double diff = team.GoalsFor - team.GoalsAgainst;
+               double percentage = played == 0 ? 0 : (points/(played*3)) * 100;
+               var resultString = $"{team.TeamName} - {points} - {played} - {team.Wins} - {team.Draws} - {defeats} - {diff} - {team.GoalsFor} - {team.GoalsAgainst} - {percentage}";
+               
+               result.Add(resultString);
+           }
+           return result;
+       }
     }
 }
