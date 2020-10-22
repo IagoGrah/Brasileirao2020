@@ -6,10 +6,13 @@ namespace Domain
 {
     public class League
     {
-        public List<Team_League> Table
-        {get; private set;}
+        private List<Team_League> Table
+        {get; set;}
 
-        public int Round
+        private List<string> History
+        {get; set;}
+        
+        private int Round
         {get; set;}
 
         public bool RegisterTeams(List<Team> teams, bool isCBF)
@@ -32,7 +35,7 @@ namespace Domain
             if (team.Players.Count >= 32) {return false;}
             
             // Cria um Player_Team pra cada Player
-            team.Players.Add(new Player_Team(playerName));
+            team.Players.Add(new Player_Team(playerName, team));
             return true;
         }
 
@@ -146,27 +149,63 @@ namespace Domain
                 results.Add($"{team.TeamName} {score1} x {score2} {opponent.TeamName}");
             }
 
+            History.AddRange(results);
             return results;
 
         }
 
-       public List<string> GetTable()
-       {
-           var result = new List<string>();
+        public List<string> GetTable()
+        {
+            var result = new List<string>();
            
-           // Calcula as estatísticas da tabela com base nas propriedades
-           foreach (var team in Table)
-           {
-               double points = (team.Wins*3) + (team.Draws);
-               double played = team.HasPlayed ? Round : Round - 1;
-               double defeats = played - team.Wins - team.Draws;
-               double diff = team.GoalsFor - team.GoalsAgainst;
-               double percentage = played == 0 ? 0 : (points/(played*3)) * 100;
-               var resultString = $"{team.TeamName} - {points} - {played} - {team.Wins} - {team.Draws} - {defeats} - {diff} - {team.GoalsFor} - {team.GoalsAgainst} - {percentage}";
-               
-               result.Add(resultString);
-           }
-           return result;
-       }
+            // Calcula as estatísticas da tabela com base nas propriedades
+            foreach (var team in Table)
+            {
+                double points = (team.Wins*3) + (team.Draws);
+                double played = team.HasPlayed ? Round : Round - 1;
+                double defeats = played - team.Wins - team.Draws;
+                double diff = team.GoalsFor - team.GoalsAgainst;
+                double percentage = played == 0 ? 0 : (points/(played*3)) * 100;
+                var resultString = $"{team.TeamName} - {points} - {played} - {team.Wins} - {team.Draws} - {defeats}  - {diff} - {team.GoalsFor} - {team.GoalsAgainst} - {percentage}";
+            
+                result.Add(resultString);
+            }
+            return result;
+        }
+
+        public List<string> GetTopGoalscorers()
+        {
+            var allPlayers = new List<Player_Team>();
+
+            foreach (var team in Table)
+            {
+                allPlayers.AddRange(team.Players);
+            }
+
+            var top10 = allPlayers.OrderByDescending(x => x.GoalsForTeam).Take(10);
+
+            var result = new List<string>();
+            foreach (var player in top10)
+            {
+                result.Add($"{player.GoalsForTeam} - {player.Name} {player.CurrentTeam.TeamName.ToUpper()}");
+            }
+
+            return result;
+        }
+
+        public List<Team_League> GetLibertadores()
+        {
+            return Table.OrderByDescending(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
+        }
+
+        public List<Team_League> GetDemoted()
+        {
+            return Table.OrderBy(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
+        }
+
+        public List<string> GetAllResults()
+        {
+            return History;
+        }
     }
 }

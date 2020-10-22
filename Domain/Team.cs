@@ -14,7 +14,7 @@ namespace Domain
         public Team(string name, List<Player> players)
         {
             TeamName = name;
-            Players = players.Select(x => new Player_Team(x)).ToList();
+            Players = players.Select(x => new Player_Team(x, this)).ToList();
         }
 
         protected Team(string name, List<Player_Team> players)
