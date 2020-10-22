@@ -14,11 +14,13 @@ namespace Domain
 
         public bool RegisterTeams(List<Team> teams, bool isCBF)
         {
+            // Só pode registrar uma vez com um número par de times de pelo menos 8
             if (!isCBF) {return false;}
             if (teams.Count < 8) {return false;}
             if (teams.Count % 2 != 0) {return false;}
             if (Table.Count > 0) {return false;}
 
+            // Cria um Team_League pra cada Team
             Table = teams.Select(x => new Team_League(x)).ToList();
             return true;
         }
@@ -26,8 +28,10 @@ namespace Domain
         public bool AddPlayer(string playerName, Team_League team, bool isCBF)
         {
             if (!isCBF) {return false;}
+            if (!Table.Contains(team)) {return false;}
             if (team.Players.Count >= 32) {return false;}
             
+            // Cria um Player_Team pra cada Player
             team.Players.Add(new Player_Team(playerName));
             return true;
         }
@@ -35,6 +39,7 @@ namespace Domain
         public bool RemovePlayer(string playerName, Team_League team, bool isCBF)
         {
             if (!isCBF) {return false;}
+            if (!Table.Contains(team)) {return false;}
             if (team.Players.Count <= 16) {return false;}
 
             var foundPlayer = team.Players.Find(x => x.Name == playerName);
@@ -43,8 +48,12 @@ namespace Domain
 
         public void GenerateRound()
         {
+            // Prepara a próxima rodada, dando um oponente para cada time
+
+            // Garante que todos os times ja jogaram a rodada passada (ou que é a primeira)
             if (Round != 0 && !Table.All(x => x.HasPlayed)) {return;}
 
+            // Reseta a rodada, deixando os times sem oponente e sem ter jogado ainda
             Table.Select(x => x.CurrentOpponent = null).Select(x => x.HasPlayed = false);
             
             foreach (var team in Table)
@@ -57,25 +66,30 @@ namespace Domain
                 {
                     var opponent = Table[random.Next(0, Table.Count)];
 
+                    // Procura um oponente válido
                     if (opponent == team) {continue;}
                     if (opponent.CurrentOpponent != null) {continue;}
                     if (team.PreviousOpponents.Contains(opponent)) {continue;}
 
                     team.CurrentOpponent = opponent;
-                    team.PreviousOpponents.Add(opponent);
                     opponent.CurrentOpponent = team;
-                    opponent.PreviousOpponents.Add(team);
                     break;
                 }
             }
 
             Round++;
+
         }
 
         public List<string> PlayRound(bool isCBF)
         {
+            // Joga as partidas definidas pelo GenerateRound(),
+            // gerando os resultados e os retornando.
+            
             if (!isCBF) {return null;}
 
+            // Garante que todos os times foram atribuídos
+            // um oponente para a rodada
             if (!Table.All(x => x.CurrentOpponent != null)) {return null;}
 
             var results = new List<string>();
@@ -84,14 +98,18 @@ namespace Domain
             {
                 if (team.HasPlayed) {continue;}
 
+                var opponent = team.CurrentOpponent;
                 var random = new Random();
+                
+                // Gera um placar aleatório de 0 a 4 gols
+                // e distribui as estatísticas devidamente entre os times
                 var score1 = random.Next(0, 4);
                 var score2 = random.Next(0, 4);
 
                 team.GoalsFor += score1;
-                team.CurrentOpponent.GoalsFor += score2;
+                opponent.GoalsFor += score2;
                 team.GoalsAgainst += score2;
-                team.CurrentOpponent.GoalsAgainst += score1;
+                opponent.GoalsAgainst += score1;
 
                 if(score1 > score2)
                 {
@@ -99,14 +117,15 @@ namespace Domain
                 }
                 else if(score2 > score1)
                 {
-                    team.CurrentOpponent.Wins++;
+                    opponent.Wins++;
                 }
                 else
                 {
                     team.Draws++;
-                    team.CurrentOpponent.Draws++;
+                    opponent.Draws++;
                 }
 
+                // Distribui os gols do times entre seus jogadores
                 for(var i = 1; i <= score1; i++)
                 {
                     var playerIndex = random.Next(0, team.Players.Count - 1);
@@ -115,16 +134,16 @@ namespace Domain
 
                 for(var i = 1; i <= score2; i++)
                 {
-                    var playerIndex = random.Next(0, team.CurrentOpponent.Players.Count - 1);
-                    team.CurrentOpponent.Players[playerIndex].GoalsForTeam++;
+                    var playerIndex = random.Next(0, opponent.Players.Count - 1);
+                    opponent.Players[playerIndex].GoalsForTeam++;
                 }
 
                 team.HasPlayed = true;
-                team.CurrentOpponent.HasPlayed = true;
-                team.PreviousOpponents.Add(team.CurrentOpponent);
-                team.CurrentOpponent.PreviousOpponents.Add(team);
+                opponent.HasPlayed = true;
+                team.PreviousOpponents.Add(opponent);
+                opponent.PreviousOpponents.Add(team);
 
-                results.Add($"{team.TeamName} {score1} x {score2} {team.CurrentOpponent.TeamName}");
+                results.Add($"{team.TeamName} {score1} x {score2} {opponent.TeamName}");
             }
 
             return results;
@@ -135,6 +154,7 @@ namespace Domain
        {
            var result = new List<string>();
            
+           // Calcula as estatísticas da tabela com base nas propriedades
            foreach (var team in Table)
            {
                double points = (team.Wins*3) + (team.Draws);
