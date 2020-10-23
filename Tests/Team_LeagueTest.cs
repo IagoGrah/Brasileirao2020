@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Tests
 {
-    public class ProgramTest
+    public class Team_LeagueTest
     {
         [Fact]
         public void should_return()
