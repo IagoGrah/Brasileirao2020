@@ -6,14 +6,14 @@ namespace Domain
 {
     public class League
     {
-        private List<Team_League> Table
-        {get; set;}
+        public List<Team_League> Table
+        {get; private set;} = new List<Team_League>();
 
-        private List<string> History
-        {get; set;}
+        public List<string> History
+        {get; private set;} = new List<string>();
         
-        private int Round
-        {get; set;}
+        public int Round
+        {get; private set;} = 0;
 
         public bool RegisterTeams(List<Team> teams, bool isCBF)
         {
@@ -49,16 +49,20 @@ namespace Domain
             return team.Players.Remove(foundPlayer);
         }
 
-        public void GenerateRound()
+        public bool GenerateRound()
         {
             // Prepara a próxima rodada, dando um oponente para cada time
-
+            if (Table.Count < 8) {return false;}
             // Garante que todos os times ja jogaram a rodada passada (ou que é a primeira)
-            if (Round != 0 && !Table.All(x => x.HasPlayed)) {return;}
+            if (Round != 0 && !Table.All(x => x.HasPlayed)) {return false;}
 
             // Reseta a rodada, deixando os times sem oponente e sem ter jogado ainda
-            Table.Select(x => x.CurrentOpponent = null).Select(x => x.HasPlayed = false);
-            
+            foreach (var team in Table)
+            {
+                team.CurrentOpponent = null;
+                team.HasPlayed = false;
+            }
+
             foreach (var team in Table)
             {
                 if (team.CurrentOpponent != null) {continue;}
@@ -81,14 +85,14 @@ namespace Domain
             }
 
             Round++;
-
+            return true;
         }
 
         public List<string> PlayRound(bool isCBF)
         {
             // Joga as partidas definidas pelo GenerateRound(),
             // gerando os resultados e os retornando.
-            
+            if (Table.Count < 8) {return null;}
             if (!isCBF) {return null;}
 
             // Garante que todos os times foram atribuídos
@@ -156,6 +160,9 @@ namespace Domain
 
         public List<string> GetTable()
         {
+            if (Table.Count < 8) {return null;}
+            if (Round == 0) {return null;}
+            
             var result = new List<string>();
            
             // Calcula as estatísticas da tabela com base nas propriedades
