@@ -167,7 +167,7 @@ namespace Domain
                 double defeats = played - team.Wins - team.Draws;
                 double diff = team.GoalsFor - team.GoalsAgainst;
                 double percentage = played == 0 ? 0 : (points/(played*3)) * 100;
-                var resultString = $"{team.TeamName} - {points} - {played} - {team.Wins} - {team.Draws} - {defeats}  - {diff} - {team.GoalsFor} - {team.GoalsAgainst} - {percentage}";
+                var resultString = $"{team.TeamName} | {points} | {played} | {team.Wins} | {team.Draws} | {defeats} | {diff} | {team.GoalsFor} | {team.GoalsAgainst} | {percentage.ToString("##0.##")}%";
             
                 result.Add(resultString);
             }

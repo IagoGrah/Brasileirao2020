@@ -411,23 +411,51 @@ namespace Tests
         }
 
         [Theory]
-        [InlineData(8)]
-        [InlineData(10)]
-        [InlineData(12)]
-        [InlineData(14)]
-        [InlineData(16)]
-        public void should_return_table(int size)
+        [InlineData(8, 1)]
+        [InlineData(10, 2)]
+        [InlineData(12, 12)]
+        [InlineData(14, 22)]
+        [InlineData(16, 32)]
+        public void should_return_table(int size, int rounds)
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
-            bras.GenerateRound();
-            bras.PlayRound(true);
+            
+            for (int i = 0; i < rounds; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
 
             var result = bras.GetTable();
 
             Assert.NotNull(result);
             Assert.Equal(size, result.Count);
+        }
+
+        [Theory]
+        [InlineData(8, 1)]
+        [InlineData(10, 2)]
+        [InlineData(12, 12)]
+        [InlineData(14, 22)]
+        [InlineData(16, 32)]
+        public void should_return_top_10_goalscorers(int size, int rounds)
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(size);
+            bras.RegisterTeams(teamsInput, true);
+            
+            for (int i = 0; i < rounds; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
+
+            var result = bras.GetTopGoalscorers();
+
+            Assert.NotNull(result);
+            Assert.Equal(10, result.Count);
         }
     }
 }
