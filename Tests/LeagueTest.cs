@@ -91,16 +91,21 @@ namespace Tests
             Assert.Equal(8, bras.Table.Count);
         }
 
-        [Fact]
-        public void should_return_true_and_register_teams()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_return_true_and_register_teams(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(10);
+            var teamsInput = GetMockTeams(size);
 
             var result = bras.RegisterTeams(teamsInput, true);
 
             Assert.True(result);
-            Assert.Equal(10, bras.Table.Count);
+            Assert.Equal(size, bras.Table.Count);
         }
 
         [Fact]
@@ -249,11 +254,16 @@ namespace Tests
             Assert.False(result);
         }
 
-        [Fact]
-        public void should_generate_round()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_generate_round(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(8);
+            var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
 
             var result = bras.GenerateRound();
@@ -298,28 +308,39 @@ namespace Tests
             Assert.Null(result);
         }
 
-        [Fact]
-        public void should_play_round()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_play_round(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(8);
+            var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
             bras.GenerateRound();
 
             var result = bras.PlayRound(true);
 
             Assert.NotNull(result);
-            Assert.Equal(4, result.Count);
+            Assert.Equal(size/2, result.Count);
             Assert.True(bras.Table.All(x => x.HasPlayed));
             Assert.True(bras.Table.All(x => x.PreviousOpponents.Count == 1));
+            Assert.True(bras.Table.All(x => x.GoalsFor >= 0 && x.GoalsFor <= 4));
             Assert.False(bras.Table.All(x => x.Draws == 0 && x.Wins == 0));
         }
 
-        [Fact]
-        public void should_generate_round_after_playing()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_generate_round_after_playing(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(8);
+            var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
             bras.GenerateRound();
             bras.PlayRound(true);
@@ -332,11 +353,16 @@ namespace Tests
             Assert.Equal(2, bras.Round);
         }
         
-        [Fact]
-        public void should_play_second_round()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_play_second_round(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(8);
+            var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
             bras.GenerateRound();
             bras.PlayRound(true);
@@ -345,11 +371,35 @@ namespace Tests
             var result = bras.PlayRound(true);
 
             Assert.NotNull(result);
-            Assert.Equal(4, result.Count);
+            Assert.Equal(size/2, result.Count);
             Assert.True(bras.Table.All(x => x.HasPlayed));
             Assert.True(bras.Table.All(x => x.PreviousOpponents.Count == 2));
         }
 
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_not_generate_round_if_reaches_limit(int size)
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(size);
+            bras.RegisterTeams(teamsInput, true);
+            
+            for (int i = 0; i < size*2; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
+
+            var result = bras.GenerateRound();
+
+            Assert.False(result);
+            Assert.Equal(size*2, bras.Round);
+        }
+        
         [Fact]
         public void should_return_null_if_there_are_no_teams()
         {
@@ -360,11 +410,16 @@ namespace Tests
             Assert.Null(result);
         }
 
-        [Fact]
-        public void should_return_table()
+        [Theory]
+        [InlineData(8)]
+        [InlineData(10)]
+        [InlineData(12)]
+        [InlineData(14)]
+        [InlineData(16)]
+        public void should_return_table(int size)
         {
             var bras = new League();
-            var teamsInput = GetMockTeams(8);
+            var teamsInput = GetMockTeams(size);
             bras.RegisterTeams(teamsInput, true);
             bras.GenerateRound();
             bras.PlayRound(true);
@@ -372,7 +427,7 @@ namespace Tests
             var result = bras.GetTable();
 
             Assert.NotNull(result);
-            Assert.Equal(8, result.Count);
+            Assert.Equal(size, result.Count);
         }
     }
 }

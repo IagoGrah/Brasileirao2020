@@ -52,7 +52,10 @@ namespace Domain
         public bool GenerateRound()
         {
             // Prepara a próxima rodada, dando um oponente para cada time
+            
             if (Table.Count < 8) {return false;}
+            // Quando alcançar o limite de rodadas, não permite mais rodadas
+            if (Round == Table.Count*2) {return false;}
             // Garante que todos os times ja jogaram a rodada passada (ou que é a primeira)
             if (Round != 0 && !Table.All(x => x.HasPlayed)) {return false;}
 
@@ -66,24 +69,19 @@ namespace Domain
             foreach (var team in Table)
             {
                 if (team.CurrentOpponent != null) {continue;}
-                
-                var random = new Random();
 
+                var random = new Random();
                 while (true)
                 {
-                    var opponent = Table[random.Next(0, Table.Count)];
-
                     // Procura um oponente válido
-                    if (opponent == team) {continue;}
-                    if (opponent.CurrentOpponent != null) {continue;}
-                    if (team.PreviousOpponents.Contains(opponent)) {continue;}
+                    var availableOpponents = Table.Where(x => x != team && x.CurrentOpponent == null).ToList();
+                    var opponent = availableOpponents[random.Next(0, availableOpponents.Count)];
 
                     team.CurrentOpponent = opponent;
                     opponent.CurrentOpponent = team;
                     break;
                 }
             }
-
             Round++;
             return true;
         }
@@ -110,8 +108,8 @@ namespace Domain
                 
                 // Gera um placar aleatório de 0 a 4 gols
                 // e distribui as estatísticas devidamente entre os times
-                var score1 = random.Next(0, 4);
-                var score2 = random.Next(0, 4);
+                var score1 = random.Next(0, 5);
+                var score2 = random.Next(0, 5);
 
                 team.GoalsFor += score1;
                 opponent.GoalsFor += score2;
@@ -135,13 +133,13 @@ namespace Domain
                 // Distribui os gols do times entre seus jogadores
                 for(var i = 1; i <= score1; i++)
                 {
-                    var playerIndex = random.Next(0, team.Players.Count - 1);
+                    var playerIndex = random.Next(0, team.Players.Count);
                     team.Players[playerIndex].GoalsForTeam++;
                 }
 
                 for(var i = 1; i <= score2; i++)
                 {
-                    var playerIndex = random.Next(0, opponent.Players.Count - 1);
+                    var playerIndex = random.Next(0, opponent.Players.Count);
                     opponent.Players[playerIndex].GoalsForTeam++;
                 }
 
