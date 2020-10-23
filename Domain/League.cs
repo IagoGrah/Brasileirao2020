@@ -141,8 +141,6 @@ namespace Domain
 
                 team.HasPlayed = true;
                 opponent.HasPlayed = true;
-                team.PreviousOpponents.Add(opponent);
-                opponent.PreviousOpponents.Add(team);
 
                 results.Add($"{team.TeamName} {score1} x {score2} {opponent.TeamName}");
             }
@@ -176,6 +174,9 @@ namespace Domain
 
         public List<string> GetTopGoalscorers()
         {
+            if (Table.Count < 8) {return null;}
+            if (Round == 0) {return null;}
+            
             var allPlayers = new List<Player_Team>();
 
             foreach (var team in Table)
@@ -196,16 +197,25 @@ namespace Domain
 
         public List<Team_League> GetLibertadores()
         {
+            if (Table.Count < 8) {return null;}
+            if (Round == 0) {return null;}
+            
             return Table.OrderByDescending(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
         }
 
         public List<Team_League> GetDemoted()
         {
+            if (Table.Count < 8) {return null;}
+            if (Round == 0) {return null;}
+            
             return Table.OrderBy(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
         }
 
         public List<string> GetAllResults()
         {
+            if (Table.Count < 8) {return null;}
+            if (Round == 0) {return null;}
+            
             return History;
         }
     }

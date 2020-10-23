@@ -326,7 +326,6 @@ namespace Tests
             Assert.NotNull(result);
             Assert.Equal(size/2, result.Count);
             Assert.True(bras.Table.All(x => x.HasPlayed));
-            Assert.True(bras.Table.All(x => x.PreviousOpponents.Count == 1));
             Assert.True(bras.Table.All(x => x.GoalsFor >= 0 && x.GoalsFor <= 4));
             Assert.False(bras.Table.All(x => x.Draws == 0 && x.Wins == 0));
         }
@@ -349,7 +348,6 @@ namespace Tests
 
             Assert.True(result);
             Assert.True(bras.Table.All(x => x.CurrentOpponent != null));
-            Assert.True(bras.Table.All(x => x.PreviousOpponents.Count == 1));
             Assert.Equal(2, bras.Round);
         }
         
@@ -373,7 +371,6 @@ namespace Tests
             Assert.NotNull(result);
             Assert.Equal(size/2, result.Count);
             Assert.True(bras.Table.All(x => x.HasPlayed));
-            Assert.True(bras.Table.All(x => x.PreviousOpponents.Count == 2));
         }
 
         [Theory]
@@ -434,6 +431,16 @@ namespace Tests
             Assert.Equal(size, result.Count);
         }
 
+        [Fact]
+        public void should_return_null_when_there_are_no_teams()
+        {
+            var bras = new League();
+
+            var result = bras.GetTopGoalscorers();
+
+            Assert.Null(result);
+        }
+        
         [Theory]
         [InlineData(8, 1)]
         [InlineData(10, 2)]
@@ -456,6 +463,92 @@ namespace Tests
 
             Assert.NotNull(result);
             Assert.Equal(10, result.Count);
+        }
+
+        [Fact]
+        public void should_all_return_null_if_there_are_no_teams()
+        {
+            var bras = new League();
+
+            var result1 = bras.GetLibertadores();
+            var result2 = bras.GetDemoted();
+            var result3 = bras.GetAllResults();
+
+            Assert.Null(result1);
+            Assert.Null(result2);
+            Assert.Null(result3);
+        }
+        
+        [Theory]
+        [InlineData(8, 1)]
+        [InlineData(10, 2)]
+        [InlineData(12, 12)]
+        [InlineData(14, 22)]
+        [InlineData(16, 32)]
+        public void should_return_top_4_teams(int size, int rounds)
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(size);
+            bras.RegisterTeams(teamsInput, true);
+            
+            for (int i = 0; i < rounds; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
+
+            var result = bras.GetLibertadores();
+
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count);
+        }
+
+        [Theory]
+        [InlineData(8, 1)]
+        [InlineData(10, 2)]
+        [InlineData(12, 12)]
+        [InlineData(14, 22)]
+        [InlineData(16, 32)]
+        public void should_return_bottom_4_teams(int size, int rounds)
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(size);
+            bras.RegisterTeams(teamsInput, true);
+            
+            for (int i = 0; i < rounds; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
+
+            var result = bras.GetDemoted();
+
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count);
+        }
+
+        [Theory]
+        [InlineData(8, 1)]
+        [InlineData(10, 2)]
+        [InlineData(12, 12)]
+        [InlineData(14, 22)]
+        [InlineData(16, 32)]
+        public void should_return_round_history(int size, int rounds)
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(size);
+            bras.RegisterTeams(teamsInput, true);
+            
+            for (int i = 0; i < rounds; i++)
+            {
+                bras.GenerateRound();
+                bras.PlayRound(true);
+            }
+
+            var result = bras.GetAllResults();
+
+            Assert.NotNull(result);
+            Assert.Equal(rounds*size/2, result.Count);
         }
     }
 }

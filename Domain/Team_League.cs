@@ -20,9 +20,6 @@ namespace Domain
         public Team_League CurrentOpponent
         {get; set;} = null;
 
-        public List<Team_League> PreviousOpponents
-        {get; set;} = new List<Team_League>();
-
         public bool HasPlayed
         {get; set;} = false;
 
