@@ -60,11 +60,7 @@ namespace Domain
             if (Round != 0 && !Table.All(x => x.HasPlayed)) {return false;}
 
             // Reseta a rodada, deixando os times sem oponente e sem ter jogado ainda
-            foreach (var team in Table)
-            {
-                team.CurrentOpponent = null;
-                team.HasPlayed = false;
-            }
+            Table.ForEach(x => {x.HasPlayed = false; x.CurrentOpponent = null;});
 
             foreach (var team in Table)
             {
