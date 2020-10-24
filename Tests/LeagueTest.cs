@@ -327,7 +327,7 @@ namespace Tests
             Assert.Equal(size/2, result.Count);
             Assert.True(bras.Table.All(x => x.HasPlayed));
             Assert.True(bras.Table.All(x => x.GoalsFor >= 0 && x.GoalsFor <= 4));
-            Assert.False(bras.Table.All(x => x.Draws == 0 && x.Wins == 0));
+            Assert.False(bras.Table.All(x => x.Points == 0));
         }
 
         [Theory]

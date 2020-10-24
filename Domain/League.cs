@@ -9,6 +9,9 @@ namespace Domain
         public List<Team_League> Table
         {get; private set;} = new List<Team_League>();
 
+        public IReadOnlyCollection<Team_League> TableOrdered
+        { get{return Table.OrderByDescending(x => x.Points).ThenByDescending(x => x.GoalDifference).ThenByDescending(x => x.GoalsFor).ToList();} }
+
         public List<string> History
         {get; private set;} = new List<string>();
         
@@ -115,10 +118,12 @@ namespace Domain
                 if(score1 > score2)
                 {
                     team.Wins++;
+                    opponent.Losses++;
                 }
                 else if(score2 > score1)
                 {
                     opponent.Wins++;
+                    team.Losses++;
                 }
                 else
                 {
@@ -158,14 +163,11 @@ namespace Domain
             var result = new List<string>();
            
             // Calcula as estatísticas da tabela com base nas propriedades
-            foreach (var team in Table)
+            foreach (var team in TableOrdered)
             {
-                double points = (team.Wins*3) + (team.Draws);
                 double played = team.HasPlayed ? Round : Round - 1;
-                double defeats = played - team.Wins - team.Draws;
-                double diff = team.GoalsFor - team.GoalsAgainst;
-                double percentage = played == 0 ? 0 : (points/(played*3)) * 100;
-                var resultString = $"{team.TeamName} | {points} | {played} | {team.Wins} | {team.Draws} | {defeats} | {diff} | {team.GoalsFor} | {team.GoalsAgainst} | {percentage.ToString("##0.##")}%";
+                double percentage = played == 0 ? 0 : (team.Points/(played*3)) * 100;
+                var resultString = $"{team.TeamName} | {team.Points} | {played} | {team.Wins} | {team.Draws} | {team.Losses} | {team.GoalDifference} | {team.GoalsFor} | {team.GoalsAgainst} | {percentage.ToString("##0.##")}%";
             
                 result.Add(resultString);
             }
@@ -200,7 +202,7 @@ namespace Domain
             if (Table.Count < 8) {return null;}
             if (Round == 0) {return null;}
             
-            return Table.OrderByDescending(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
+            return TableOrdered.Take(4).ToList();
         }
 
         public List<Team_League> GetDemoted()
@@ -208,7 +210,7 @@ namespace Domain
             if (Table.Count < 8) {return null;}
             if (Round == 0) {return null;}
             
-            return Table.OrderBy(x => (x.Wins*3) + (x.Draws)).Take(4).ToList();
+            return TableOrdered.TakeLast(4).ToList();
         }
 
         public List<string> GetAllResults()
