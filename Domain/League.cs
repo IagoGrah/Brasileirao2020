@@ -24,6 +24,7 @@ namespace Domain
             if (!isCBF) {return false;}
             if (teams.Count < 8) {return false;}
             if (teams.Count % 2 != 0) {return false;}
+            if (teams.Any(x => x.Players.Count > 32 || x.Players.Count < 16)) {return false;}
             if (Table.Count > 0) {return false;}
 
             // Cria um Team_League pra cada Team

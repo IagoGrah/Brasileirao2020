@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Domain
+﻿namespace Domain
 {
     public class Player_Team : Player
     {
         public Team CurrentTeam
-        {get; set;}
+        {get; private set;}
         
         public int GoalsForTeam
         {get; set;} = 0;
