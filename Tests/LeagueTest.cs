@@ -78,6 +78,19 @@ namespace Tests
         }
 
         [Fact]
+        public void should_return_false_and_not_register_when_invalid_squad_size()
+        {
+            var bras = new League();
+            var teamsInput = GetMockTeams(7);
+            teamsInput.Add(new Team("Precarios", GetMockPlayers(15)));
+
+            var result = bras.RegisterTeams(teamsInput, true);
+
+            Assert.False(result);
+            Assert.Empty(bras.Table);
+        }
+
+        [Fact]
         public void should_return_false_and_not_register_the_second_time()
         {
             var bras = new League();
