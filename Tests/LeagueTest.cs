@@ -41,6 +41,30 @@ namespace Tests
             return MockTeams.Take(amount).ToList();
         }
         
+        [Theory]
+        [InlineData("senhaErrada")]
+        [InlineData("s3nh43rr4d4")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void should_not_be_cbf_if_wrong_password(string password)
+        {
+            var bras = new League();
+
+            var result = bras.Login(password);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void should_be_cbf_if_correct_password()
+        {
+            var bras = new League();
+
+            var result = bras.Login("goldomengao");
+
+            Assert.True(result);
+        }
+        
         [Fact]
         public void should_return_false_and_not_register_when_less_than_8_teams()
         {
