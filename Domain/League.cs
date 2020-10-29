@@ -6,6 +6,9 @@ namespace Domain
 {
     public class League
     {
+        private bool UserIsCBF
+        {get; set;} = false;
+        
         public List<Team_League> Table
         {get; private set;} = new List<Team_League>();
 
@@ -18,10 +21,16 @@ namespace Domain
         public int Round
         {get; private set;} = 0;
 
-        public bool RegisterTeams(List<Team> teams, bool isCBF)
+        public bool Login(string password)
+        {
+            if (password == "goldomengao") {UserIsCBF = true; return true;}
+            else {UserIsCBF = false; return false;}
+        }
+        
+        public bool RegisterTeams(List<Team> teams)
         {
             // Só pode registrar uma vez com um número par de times de pelo menos 8
-            if (!isCBF) {return false;}
+            if (!UserIsCBF) {return false;}
             if (teams.Count < 8) {return false;}
             if (teams.Count % 2 != 0) {return false;}
             if (teams.Any(x => x.Players.Count > 32 || x.Players.Count < 16)) {return false;}
@@ -32,9 +41,9 @@ namespace Domain
             return true;
         }
 
-        public bool AddPlayer(string playerName, Team_League team, bool isCBF)
+        public bool AddPlayer(string playerName, Team_League team)
         {
-            if (!isCBF) {return false;}
+            if (!UserIsCBF) {return false;}
             if (!Table.Contains(team)) {return false;}
             if (team.Players.Count >= 32) {return false;}
             
@@ -43,9 +52,9 @@ namespace Domain
             return true;
         }
 
-        public bool RemovePlayer(string playerName, Team_League team, bool isCBF)
+        public bool RemovePlayer(string playerName, Team_League team)
         {
-            if (!isCBF) {return false;}
+            if (!UserIsCBF) {return false;}
             if (!Table.Contains(team)) {return false;}
             if (team.Players.Count <= 16) {return false;}
 
@@ -86,12 +95,12 @@ namespace Domain
             return true;
         }
 
-        public List<string> PlayRound(bool isCBF)
+        public List<string> PlayRound()
         {
             // Joga as partidas definidas pelo GenerateRound(),
             // gerando os resultados e os retornando.
             if (Table.Count < 8) {return null;}
-            if (!isCBF) {return null;}
+            if (!UserIsCBF) {return null;}
 
             // Garante que todos os times foram atribuídos
             // um oponente para a rodada

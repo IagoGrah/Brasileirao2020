@@ -46,8 +46,9 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(7);
+            bras.Login("goldomengao");
 
-            var result = bras.RegisterTeams(teamsInput, true);
+            var result = bras.RegisterTeams(teamsInput);
 
             Assert.False(result);
             Assert.Empty(bras.Table);
@@ -58,8 +59,9 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(8);
+            bras.Login("goldaalemanha");
 
-            var result = bras.RegisterTeams(teamsInput, false);
+            var result = bras.RegisterTeams(teamsInput);
 
             Assert.False(result);
             Assert.Empty(bras.Table);
@@ -70,8 +72,9 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(11);
+            bras.Login("goldomengao");
 
-            var result = bras.RegisterTeams(teamsInput, true);
+            var result = bras.RegisterTeams(teamsInput);
 
             Assert.False(result);
             Assert.Empty(bras.Table);
@@ -82,9 +85,10 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(7);
+            bras.Login("goldomengao");
             teamsInput.Add(new Team("Precarios", GetMockPlayers(15)));
 
-            var result = bras.RegisterTeams(teamsInput, true);
+            var result = bras.RegisterTeams(teamsInput);
 
             Assert.False(result);
             Assert.Empty(bras.Table);
@@ -96,9 +100,10 @@ namespace Tests
             var bras = new League();
             var teamsInput = GetMockTeams(8);
             var teamsInput2 = GetMockTeams(8);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
-            var result = bras.RegisterTeams(teamsInput2, true);
+            var result = bras.RegisterTeams(teamsInput2);
             
             Assert.False(result);
             Assert.Equal(8, bras.Table.Count);
@@ -114,8 +119,9 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
+            bras.Login("goldomengao");
 
-            var result = bras.RegisterTeams(teamsInput, true);
+            var result = bras.RegisterTeams(teamsInput);
 
             Assert.True(result);
             Assert.Equal(size, bras.Table.Count);
@@ -126,10 +132,12 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = bras.Table[0];
-            var result = bras.AddPlayer("Mauricio", team, false);
+            bras.Login("goldaalemanha");
+            var result = bras.AddPlayer("Mauricio", team);
 
             Assert.False(result);
             Assert.False(team.Players.Exists(x => x.Name == "Mauricio"));
@@ -140,10 +148,11 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = new Team_League(new Team("Inexistentes", GetMockPlayers(24)));
-            var result = bras.AddPlayer("Mauricio", team, true);
+            var result = bras.AddPlayer("Mauricio", team);
 
             Assert.False(result);
             Assert.False(team.Players.Exists(x => x.Name == "Mauricio"));
@@ -154,11 +163,12 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(9);
+            bras.Login("goldomengao");
             teamsInput.Add(new Team("Cheios", GetMockPlayers(32)));
-            bras.RegisterTeams(teamsInput, true);
+            bras.RegisterTeams(teamsInput);
 
             var team = bras.Table[9];
-            var result = bras.AddPlayer("Mauricio", team, true);
+            var result = bras.AddPlayer("Mauricio", team);
 
             Assert.False(result);
             Assert.False(team.Players.Exists(x => x.Name == "Mauricio"));
@@ -173,10 +183,12 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = bras.Table[0];
-            var result = bras.AddPlayer(pName, team, true);
+            var result = bras.AddPlayer(pName, team);
+            bras.Login("goldomengao");
 
             Assert.True(result);
             Assert.True(team.Players.Exists(x => x.Name == pName));
@@ -187,10 +199,12 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
+            bras.Login("goldaalemanha");
             var team = bras.Table[0];
-            var result = bras.RemovePlayer("Jonas", team, false);
+            var result = bras.RemovePlayer("Jonas", team);
 
             Assert.False(result);
             Assert.True(team.Players.Exists(x => x.Name == "Jonas"));
@@ -201,10 +215,11 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = new Team_League(new Team("Inexistentes", GetMockPlayers(24)));
-            var result = bras.RemovePlayer("Jonas", team, true);
+            var result = bras.RemovePlayer("Jonas", team);
 
             Assert.False(result);
             Assert.True(team.Players.Exists(x => x.Name == "Jonas"));
@@ -216,10 +231,11 @@ namespace Tests
             var bras = new League();
             var teamsInput = GetMockTeams(9);
             teamsInput.Add(new Team("Vazios", GetMockPlayers(16)));
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = bras.Table[9];
-            var result = bras.RemovePlayer("Jonas", team, true);
+            var result = bras.RemovePlayer("Jonas", team);
 
             Assert.False(result);
             Assert.True(team.Players.Exists(x => x.Name == "Jonas"));
@@ -234,10 +250,11 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(10);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var team = bras.Table[0];
-            var result = bras.RemovePlayer(pName, team, true);
+            var result = bras.RemovePlayer(pName, team);
 
             Assert.True(result);
             Assert.False(team.Players.Exists(x => x.Name == pName));
@@ -259,7 +276,8 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(8);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             bras.GenerateRound();
             
             var result = bras.GenerateRound();
@@ -277,7 +295,8 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
             var result = bras.GenerateRound();
 
@@ -291,10 +310,12 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(8);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             bras.GenerateRound();
 
-            var result = bras.PlayRound(false);
+            bras.Login("goldaalemanha");
+            var result = bras.PlayRound();
 
             Assert.Null(result);
         }
@@ -303,8 +324,9 @@ namespace Tests
         public void should_return_null_when_no_teams()
         {
             var bras = new League();
+            bras.Login("goldomengao");
             
-            var result = bras.PlayRound(true);
+            var result = bras.PlayRound();
 
             Assert.Null(result);
         }
@@ -314,9 +336,10 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(8);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
 
-            var result = bras.PlayRound(true);
+            var result = bras.PlayRound();
 
             Assert.Null(result);
         }
@@ -331,10 +354,11 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             bras.GenerateRound();
 
-            var result = bras.PlayRound(true);
+            var result = bras.PlayRound();
 
             Assert.NotNull(result);
             Assert.Equal(size/2, result.Count);
@@ -353,9 +377,10 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             bras.GenerateRound();
-            bras.PlayRound(true);
+            bras.PlayRound();
 
             var result = bras.GenerateRound();
 
@@ -374,12 +399,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             bras.GenerateRound();
-            bras.PlayRound(true);
+            bras.PlayRound();
             bras.GenerateRound();
 
-            var result = bras.PlayRound(true);
+            var result = bras.PlayRound();
 
             Assert.NotNull(result);
             Assert.Equal(size/2, result.Count);
@@ -396,12 +422,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < size*2; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GenerateRound();
@@ -430,12 +457,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < rounds; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GetTable();
@@ -464,12 +492,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < rounds; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GetTopGoalscorers();
@@ -502,12 +531,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < rounds; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GetLibertadores();
@@ -526,12 +556,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < rounds; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GetDemoted();
@@ -550,12 +581,13 @@ namespace Tests
         {
             var bras = new League();
             var teamsInput = GetMockTeams(size);
-            bras.RegisterTeams(teamsInput, true);
+            bras.Login("goldomengao");
+            bras.RegisterTeams(teamsInput);
             
             for (int i = 0; i < rounds; i++)
             {
                 bras.GenerateRound();
-                bras.PlayRound(true);
+                bras.PlayRound();
             }
 
             var result = bras.GetAllResults();
